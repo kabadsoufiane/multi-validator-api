@@ -1,0 +1,80 @@
+spring:
+  application:
+    name: multi-validator-api
+
+  datasource:
+    url: ${DATABASE_URL}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 2
+      connection-timeout: 20000
+      idle-timeout: 300000
+      max-lifetime: 600000
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
+
+  cache:
+    type: caffeine
+    caffeine:
+      spec: maximumSize=100000,expireAfterWrite=7d
+
+# Swagger - Activé en production
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    disable-swagger-default-url: true
+  show-actuator: false
+
+server:
+  port: ${PORT:8080}
+  compression:
+    enabled: true
+    mime-types: application/json,text/plain
+    min-response-size: 1024
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,prometheus,info
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: when-authorized
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+# Configuration custom
+validator:
+  rate-limit:
+    enabled: true
+  disposable:
+    update-cron: "0 0 2 * * MON"  # Mise à jour tous les lundis à 2h du matin
+
+logging:
+  level:
+    root: INFO
+    com.validatorapi: INFO
+    org.hibernate: WARN
+    org.springframework: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"

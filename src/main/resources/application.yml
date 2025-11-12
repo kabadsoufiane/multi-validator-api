@@ -1,0 +1,65 @@
+spring:
+  application:
+    name: multi-validator-api
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/validator_db
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  cache:
+    type: caffeine
+    caffeine:
+      spec: maximumSize=100000,expireAfterWrite=7d
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    disable-swagger-default-url: true
+  show-actuator: false
+  default-produces-media-type: application/json
+  default-consumes-media-type: application/json
+
+server:
+  port: 8080
+  compression:
+    enabled: true
+    mime-types: application/json
+    min-response-size: 1024
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,prometheus
+      base-path: /actuator
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
+# Configuration custom
+validator:
+  rate-limit:
+    enabled: true
+  disposable:
+    update-cron: "0 0 2 * * MON"
+
+logging:
+  level:
+    com.validatorapi: INFO
+    org.hibernate: WARN

@@ -1,0 +1,28 @@
+services:
+  # Web Service (API)
+  - type: web
+    name: multi-validator-api
+    runtime: docker
+    plan: free
+    region: frankfurt
+    branch: main
+    buildCommand: mvn clean package -DskipTests
+    startCommand: java -Xmx512m -Dserver.port=$PORT -Dspring.profiles.active=prod -jar target/multi-validator.jar
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: DATABASE_URL
+        fromDatabase:
+          name: validator-db
+          property: connectionString
+      - key: JAVA_OPTS
+        value: -Xmx512m -XX:+UseContainerSupport
+
+databases:
+  # PostgreSQL Database
+  - name: validator-db
+    databaseName: validator
+    user: validator_user
+    plan: free
+    region: frankfurt
