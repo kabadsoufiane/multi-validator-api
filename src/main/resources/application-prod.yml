@@ -80,3 +80,8 @@ logging:
     org.springframework: WARN
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+
+app:
+  keep-alive:
+    enabled: true
+    url: https://multi-validator-api-yb94.onrender.com/actuator/health
